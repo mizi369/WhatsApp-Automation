@@ -1,0 +1,121 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Default Deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Helper Functions
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isEmailVerified() {
+      return isSignedIn() && request.auth.token.email_verified == true;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    // --- Entity Validations ---
+
+    function isValidBooking(data) {
+      return data.keys().hasAll(['customerName', 'phone', 'serviceType', 'status'])
+        && data.customerName is string && data.customerName.size() <= 200
+        && data.phone is string && data.phone.size() <= 50
+        && data.status in ['Pending', 'Confirmed', 'Completed'];
+    }
+
+    function isValidSale(data) {
+      return data.keys().hasAll(['customerName', 'total', 'status'])
+        && data.customerName is string && data.customerName.size() <= 200
+        && data.total is number
+        && data.status is string;
+    }
+
+    function isValidEmployee(data) {
+      return data.keys().hasAll(['name', 'position'])
+        && data.name is string && data.name.size() <= 200
+        && data.position is string;
+    }
+
+    function isValidInventory(data) {
+       return data.keys().hasAll(['itemName', 'stock'])
+        && data.itemName is string && data.itemName.size() <= 200
+        && data.stock is number;
+    }
+
+    function isValidExpense(data) {
+      return data.keys().hasAll(['amount', 'description', 'category'])
+        && data.amount is number
+        && data.description is string && data.description.size() <= 500
+        && data.category is string;
+    }
+
+    function isValidCustomer(data) {
+      return data.keys().hasAll(['name', 'phone'])
+        && data.name is string && data.name.size() <= 200
+        && data.phone is string && data.phone.size() <= 50;
+    }
+
+    // --- Collection Matches ---
+
+    match /test/connection {
+      allow read: if isSignedIn();
+    }
+
+    match /mnf_bookings/{bookingId} {
+      allow read: if isSignedIn();
+      allow create: if isEmailVerified() && isValidBooking(incoming()) && isValidId(bookingId);
+      allow update: if isEmailVerified() && isValidBooking(incoming()) && (
+        incoming().diff(existing()).affectedKeys().hasOnly(['status', 'team', 'teamId', 'timeSlot', 'location_lat', 'location_lng', 'date', 'customerName', 'address', 'phone', 'serviceType', 'unitType', 'quantity'])
+      );
+      allow delete: if isEmailVerified();
+    }
+
+    match /mnf_sales/{saleId} {
+      allow read: if isSignedIn();
+      allow create: if isEmailVerified() && isValidSale(incoming()) && isValidId(saleId);
+      allow update: if isEmailVerified() && isValidSale(incoming());
+      allow delete: if isEmailVerified();
+    }
+
+    match /mnf_customers/{customerId} {
+      allow read: if isSignedIn();
+      allow create: if isEmailVerified() && isValidCustomer(incoming()) && isValidId(customerId);
+      allow update: if isEmailVerified() && isValidCustomer(incoming());
+      allow delete: if isEmailVerified();
+    }
+
+    match /mnf_employees/{employeeId} {
+      allow read: if isSignedIn();
+      allow create: if isEmailVerified() && isValidEmployee(incoming()) && isValidId(employeeId);
+      allow update: if isEmailVerified() && isValidEmployee(incoming());
+      allow delete: if isEmailVerified();
+    }
+
+    match /mnf_inventory/{itemId} {
+      allow read: if isSignedIn();
+      allow create: if isEmailVerified() && isValidInventory(incoming()) && isValidId(itemId);
+      allow update: if isEmailVerified() && isValidInventory(incoming());
+      allow delete: if isEmailVerified();
+    }
+
+    match /mnf_expenses/{expenseId} {
+      allow read: if isSignedIn();
+      allow create: if isEmailVerified() && isValidExpense(incoming()) && isValidId(expenseId);
+      allow update: if isEmailVerified() && isValidExpense(incoming());
+      allow delete: if isEmailVerified();
+    }
+  }
+}

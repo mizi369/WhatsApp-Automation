@@ -1,0 +1,107 @@
+{
+  "entities": {
+    "Booking": {
+      "title": "Booking",
+      "description": "Customer service booking",
+      "type": "object",
+      "properties": {
+        "date": { "type": "string" },
+        "customerName": { "type": "string" },
+        "address": { "type": "string" },
+        "phone": { "type": "string" },
+        "serviceType": { "type": "string" },
+        "unitType": { "type": "string" },
+        "quantity": { "type": "string" },
+        "timeSlot": { "type": "string" },
+        "team": { "type": "string" },
+        "status": { "type": "string", "enum": ["Pending", "Confirmed", "Completed"] },
+        "location_lat": { "type": "number" },
+        "location_lng": { "type": "number" }
+      }
+    },
+    "Employee": {
+      "title": "Employee",
+      "description": "Staff member record",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "icNumber": { "type": "string" },
+        "address": { "type": "string" },
+        "position": { "type": "string" },
+        "basic_salary": { "type": "number" },
+        "type": { "type": "string" },
+        "epf_enabled": { "type": "number" },
+        "socso_enabled": { "type": "number" }
+      }
+    },
+    "InventoryItem": {
+      "title": "Inventory Item",
+      "description": "Stock and supplies",
+      "type": "object",
+      "properties": {
+        "itemName": { "type": "string" },
+        "shopName": { "type": "string" },
+        "unit": { "type": "string" },
+        "stock": { "type": "number" },
+        "status": { "type": "string" },
+        "buyPrice": { "type": "number" },
+        "sellPrice": { "type": "number" },
+        "paymentType": { "type": "string" },
+        "paymentMethod": { "type": "string" },
+        "date": { "type": "string" }
+      }
+    },
+    "SaleRecord": {
+      "title": "Sale Record",
+      "description": "Sales and service transaction",
+      "type": "object",
+      "properties": {
+        "date": { "type": "string" },
+        "customerName": { "type": "string" },
+        "address": { "type": "string" },
+        "phone": { "type": "string" },
+        "serviceDescription": { "type": "string" },
+        "adminName": { "type": "string" },
+        "amount": { "type": "number" },
+        "discount": { "type": "number" },
+        "total": { "type": "number" },
+        "paymentType": { "type": "string" },
+        "paymentMethod": { "type": "string" },
+        "status": { "type": "string" }
+      }
+    },
+    "Expense": {
+      "title": "Expense",
+      "description": "Business expense",
+      "type": "object",
+      "properties": {
+        "date": { "type": "string" },
+        "amount": { "type": "number" },
+        "description": { "type": "string" },
+        "category": { "type": "string" },
+        "paymentType": { "type": "string" },
+        "paymentMethod": { "type": "string" }
+      }
+    },
+    "Customer": {
+      "title": "Customer",
+      "description": "Customer profile",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "phone": { "type": "string" },
+        "address": { "type": "string" },
+        "lastService": { "type": "string" },
+        "totalSpent": { "type": "number" }
+      }
+    }
+  },
+  "firestore": {
+    "mnf_bookings": { "schema": "Booking", "description": "Customer bookings" },
+    "mnf_employees": { "schema": "Employee", "description": "Staff records" },
+    "mnf_inventory": { "schema": "InventoryItem", "description": "Inventory stock" },
+    "mnf_sales": { "schema": "SaleRecord", "description": "Sales history" },
+    "mnf_expenses": { "schema": "Expense", "description": "Expense history" },
+    "mnf_customers": { "schema": "Customer", "description": "Customer CRM" }
+  }
+}

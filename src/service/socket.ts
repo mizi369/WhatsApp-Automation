@@ -1,0 +1,9 @@
+import { io } from 'socket.io-client';
+import { BACKEND_URL } from '../constants';
+
+export const socket = io(BACKEND_URL, {
+  autoConnect: true,
+  reconnection: true,
+  transports: ['websocket', 'polling'],
+  timeout: 45000,
+});
